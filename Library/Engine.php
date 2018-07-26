@@ -20,6 +20,10 @@ class Engine
 	private $challenge;
 	private $code;
 
+	/*
+	*
+	*
+	*/
 	public function __construct()
 	{
 		if(!Request::is_checked())
@@ -27,9 +31,13 @@ class Engine
 			throw new Exception("Request mismatch.");
 		}
 
-		$this -> string = $_POST["string"];
+		$this -> string = Bridge::read('public')['request']['string'];
 	}
 
+	/*
+	*
+	*
+	*/
 	public function ___execute($cbchl = null)
 	{
 		if($cbchl === null)
@@ -75,11 +83,15 @@ class Engine
 		}
 	}
 
+	/*
+	*
+	*
+	*/
 	protected function match($data)
 	{
 		foreach($data as $key => $vector)
 		{
-			if(preg_match("/$vector[match]/", $_POST["string"]) === 1)
+			if(preg_match("/$vector[match]/", $this -> string) === 1)
 			{
 				$this -> ___cbregister($vector);
 
@@ -90,6 +102,10 @@ class Engine
 		return false;
 	}
 
+	/*
+	*
+	*
+	*/
 	protected function challenge($data)
 	{
 		foreach($data as $key => $vector)
@@ -108,7 +124,7 @@ class Engine
 
 			foreach($challenge as $k => $v)
 			{
-				if(preg_match("/$v/", $_POST["string"]) === 1)
+				if(preg_match("/$v/", $this -> string) === 1)
 				{
 					$this -> ___cbregister([
 						"match" => null,
@@ -126,6 +142,10 @@ class Engine
 		return false;
 	}
 
+	/*
+	*
+	*
+	*/
 	private function ___cbregister($data)
 	{
 		!empty($data["match"]) 			? 	$this -> match = (int)($data["match"]) 				: null;
@@ -135,6 +155,10 @@ class Engine
 		!empty($data["cb_challenge_id"]) ? 	$this -> challenge = (int)($data["cb_challenge_id"]) : null;
 	}
 
+	/*
+	*
+	*
+	*/
 	private function ___cborder()
 	{
 		if((int)($this -> answer) !== 0)
@@ -148,7 +172,11 @@ class Engine
 
 		return false; 
 	}
-
+	
+	/*
+	*
+	*
+	*/
 	private function ___cbexec($input)
 	{
 		switch($input)
@@ -174,7 +202,9 @@ class Engine
 				];						
 			}
 
-			case "code":
+			// Causes security issues. Feature ruled out for now.
+			//
+			/*case "code":
 			{
 				Bridge::update(["cb" => ["code" => $this -> code]], 'private');
 
@@ -183,7 +213,7 @@ class Engine
 						"code" => (new Code) -> read('id:'. $this -> code)["id"],
 					],
 				];
-			}
+			}*/
 
 			default:
 			{
