@@ -7,14 +7,28 @@ class Response
 	private static $DATA = [
 		"success" => null,
 		"note" => null,
-		"data" => [],
+		"data" => [
+			"cbchl" => null,
+			"reply" => null,
+			"code" => null,
+		],
 	];
 
+	/*
+	*
+	* 
+	*
+	*/
 	public static function read($type = 'array')
 	{
 		return ($type === 'array') ? self::$DATA : json_encode(self::$DATA);
 	}
 
+	/*
+	*
+	* 
+	*
+	*/
 	public static function update($data)
 	{
 		if(is_array($data) && !empty($data))
@@ -29,7 +43,12 @@ class Response
 
 		throw new Exception("Please input a valid array data.");
 	}
-
+	
+	/*
+	*
+	* 
+	*
+	*/
 	public static function send($read = true, $update = true)
 	{
 		header("Content-Type: application/json");

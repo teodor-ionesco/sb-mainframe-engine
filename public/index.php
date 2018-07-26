@@ -2,15 +2,38 @@
 
 require_once('../autoload.php');
 
+use Library\Bridge;
 use Library\Request;
-use Library\Response;
+use Library\Engine;
+use Library\Pub\Exec;
+use Library\Entities\Code;
 
-if((new Request) -> check()["success"] === 0)
+if((new Request) -> check() === false)
 {
-	Response::send();
+	Bridge::send();
 	exit();
 }
 
-use Library\Engine;
+switch(Bridge::read()['cb']['challenge'])
+{
+	case (null):
+	{
+		(new Engine) -> ___execute();
+		break;
+	}
 
-(new Engine) -> execute();
+	default:
+	{
+		(new Engine) -> ___execute(Bridge::read()['cb']['challenge']);
+		break;
+	}
+}
+
+if(Bridge::read()['cb']['code'] !== null)
+{
+	Bridge::update(["response" => 
+		["reply" => (new Exec()) -> ___exec((new Code) -> read('id:'. Bridge::read()['cb']['code'])["code"])]
+	], 'public');
+}
+
+Bridge::send();

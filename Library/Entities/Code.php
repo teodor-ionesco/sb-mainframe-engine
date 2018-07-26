@@ -9,7 +9,7 @@ use Library\DB;
 use Library\Bridge;
 use Library\Request;
 
-class Match implements Def
+class Code implements Def
 {
 	public static $State;
 	private $DB;
@@ -29,8 +29,8 @@ class Match implements Def
 		if($target === 'all')
 		{
 			self::$State = $this -> DB -> query("SELECT *
-												FROM cb_match
-												WHERE cb_match.cb_id = '". Bridge::read()["cb"]["id"] ."';")
+												FROM cb_code
+												WHERE cb_code.cb_id = '". Bridge::read()["cb"]["id"] ."';")
 								-> fetchAll(PDO::FETCH_ASSOC);
 			return self::$State;
 		}
@@ -43,9 +43,9 @@ class Match implements Def
 				try
 				{
 					$ret = $this -> DB -> prepare("SELECT *
-													FROM cb_match
-													WHERE cb_match.$x[0] = :$x[0]
-														AND cb_match.cb_id = '". Bridge::read()["cb"]["id"] ."';");
+													FROM cb_code
+													WHERE cb_code.$x[0] = :$x[0]
+														AND cb_code.cb_id = '". Bridge::read()["cb"]["id"] ."';");
 					$ret -> execute([":$x[0]" => $x[1]]);
 
 					self::$State = $ret -> fetch(PDO::FETCH_ASSOC);

@@ -3,7 +3,7 @@
 namespace Library;
 
 use Exception;
-use Library\Response;
+use Library\Bridge;
 use Library\Entities\Chatbot;
 
 class Request
@@ -16,55 +16,75 @@ class Request
 	}
 
 	/*
-	*
-	* 
-	*
+	********************************************************
+	********************************************************
+	********************************************************
 	*/
 	public function check()
 	{
-		if(isset($_GET["cbhid"]) && !empty($_GET["cbhid"]))
+		if(isset($_POST["cbhid"]) && !empty($_POST["cbhid"]))
 		{
-			if($this -> Chatbot -> read('cbhid:'. $_GET["cbhid"]) === false)
+			if($this -> Chatbot -> read('cbhid:'. $_POST["cbhid"]) === false)
 			{
-				Response::update([
+				Bridge::update([
 					"success" => 0,
 					"note" => "Invalid CBHID"
-				]);
+				], 'public');
 
-				return Response::read();
+				return false;
 			}
-			
+		}
+		else
+		{
+			Bridge::update([
+				"success" => 0,
+				"note" => "CBHID not supplied"
+			], 'public');
+
+			return false;
 		}
 
-		if(!isset($_POST["string"]) || empty($_POST["string"]))
+		if(!isset($_POST["string"]) || empty((string)($_POST["string"])))
 		{
-			Response::update([
+			Bridge::update([
 				"success" => 0,
 				"note" => "No string supplied."
-			]);
+			], 'public');
 
-			return Response::read();
+			return false;
 		}
-		
-		Response::update([
-			"success" => 1,
-			"note" => "",
-			"data" => [
-				"cbid" => $this -> Chatbot :: $State["id"],
-			],
-		]);
 
-		return Response::read();
+		if(isset($_POST["cbchl"]) && !empty((string)($_POST["cbchl"])))
+		{
+			Bridge::update(['cb' => ['challenge' => $_POST["cbchl"],],], 'private');
+			Bridge::update(['request' => ['cbchl' => $_POST["cbchl"],],], 'public');
+		}
+
+		Bridge::update([
+			"cb" => [
+				"id" => $this -> Chatbot :: $State["id"],
+			],
+		], 'private');
+
+		Bridge::update([
+			"success" => 1,
+			"request" => [
+				'cbhid' => $_POST["cbhid"],
+				'string' => $_POST["string"],
+			],
+		], 'public');
+
+		return true;
 	}
 	
 	/*
-	*
-	* 
-	*
+	********************************************************
+	********************************************************
+	********************************************************
 	*/
-	public static function is_data()
+	public static function is_checked()
 	{
-		if(!empty(Response::read()["data"]))
+		if(Bridge::read('private')['cb']['id'] !== null)
 		{
 			return true;
 		}
